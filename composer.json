@@ -11,6 +11,7 @@
         "filament/widgets": "^3.3",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
+        "laravel/telescope": "^5.7",
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
         "phpoffice/phpspreadsheet": "^1.29"
@@ -21,6 +22,7 @@
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
+        "mrmarchone/laravel-auto-crud": "^1.6",
         "nunomaduro/collision": "^8.6",
         "phpunit/phpunit": "^11.5.3"
     },

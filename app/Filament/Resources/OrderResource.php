@@ -17,7 +17,9 @@ class OrderResource extends Resource
 {
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
     protected static ?string $navigationLabel = 'Orders';
+//    protected static ?string $group = 'Inventory'; // Corrected and added here
     protected static ?string $model = Item::class;
+    protected static ?string $navigationGroup = 'Inventory';
     public static function getWidgets(): array
     {
         return [

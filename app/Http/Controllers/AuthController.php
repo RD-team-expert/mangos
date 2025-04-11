@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserLoggedIn;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -26,11 +27,18 @@ class AuthController extends Controller
         // Attempt to log the user in with Sanctum session authentication
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
+
+                // This shouldn’t happen with default setup, but for safety
+                $user = User::find(Auth::id());
+
+
             // If you want to issue a Sanctum token for API use (optional)
             $token = $user->createToken('auth_token')->plainTextToken;
 
             // Regenerate session to prevent fixation
             $request->session()->regenerate();
+
+            event(new UserLoggedIn($user));
 
             // Redirect to inventory page with success message
             return redirect()->intended('/inventory')->with('success', 'Logged in successfully');
