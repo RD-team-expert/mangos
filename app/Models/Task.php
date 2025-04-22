@@ -15,6 +15,7 @@ class Task extends Model
         'is_completed',
         'user_id',
         'is_daily',
+        'is_sensitive',
         'completed_at',
     ];
 

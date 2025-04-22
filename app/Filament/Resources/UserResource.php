@@ -21,7 +21,6 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Inventory';
 
     public static function form(Form $form): Form
     {
@@ -45,6 +44,9 @@ class UserResource extends Resource
                     ])
                     ->required()
                     ->default('user'),
+                Forms\Components\Toggle::make('is_reliable')
+                    ->label('Reliable User')
+                    ->default(false),
             ]);
     }
 
@@ -53,14 +55,18 @@ class UserResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('email')->sortable()->searchable(),
+                Tables\Columns\IconColumn::make('is_reliable')
+                    ->label('Reliable')
+                    ->boolean(),
                 TextColumn::make('role')
                     ->sortable()
                 ,
 
             ])
             ->filters([
-                //
-            ])
+                Tables\Filters\TernaryFilter::make('is_reliable')
+                    ->label('Reliable User'),
+                ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

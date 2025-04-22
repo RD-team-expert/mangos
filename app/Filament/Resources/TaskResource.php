@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TaskResource\Pages;
 use App\Filament\Resources\TaskResource\RelationManagers;
 use App\Models\Task;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,6 +19,9 @@ class TaskResource extends Resource
     protected static ?string $model = Task::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $navigationGroup = 'Tasks';
+
 
     public static function form(Form $form): Form
     {
@@ -49,9 +53,14 @@ class TaskResource extends Resource
                     ->default('english')
                     ->required(),
                 Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->default('default')
-                    ->label('Assigned User'),
+                    ->label('Assigned User')
+                    ->options(function (callable $get) {
+                        $isSensitive = $get('is_sensitive');
+                        if ($isSensitive) {
+                            return User::where('is_reliable', true)->pluck('name', 'id');
+                        }
+                        return User::pluck('name', 'id');
+                    }),
                 Forms\Components\Toggle::make('is_completed')
                     ->label('Completed')
                     ->default(false)
@@ -63,6 +72,9 @@ class TaskResource extends Resource
                     }),
                 Forms\Components\Toggle::make('is_daily')
                     ->label('Daily Task')
+                    ->default(false),
+                Forms\Components\Toggle::make('is_sensitive')
+                    ->label('Sensitive Task')
                     ->default(false),
                 Forms\Components\DateTimePicker::make('completed_at')
                     ->label('Completed At')
@@ -77,6 +89,7 @@ class TaskResource extends Resource
                             session()->flash('success', 'Image uploaded successfully! Please move to the next task.');
                         }
                     }),
+
             ]);
     }
 
@@ -98,6 +111,7 @@ class TaskResource extends Resource
                 Tables\Columns\TextColumn::make('section')
                     ->formatStateUsing(fn ($state) => ucwords(str_replace('_', ' ', $state))),
                 Tables\Columns\TextColumn::make('language'),
+
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Assigned User'),
                 Tables\Columns\ImageColumn::make('images.image_path')
@@ -114,6 +128,9 @@ class TaskResource extends Resource
                 Tables\Columns\IconColumn::make('is_daily')
                     ->label('Daily Task')
                     ->boolean(),
+                Tables\Columns\IconColumn::make('is_sensitive')
+                    ->label('Sensitive Task')
+                    ->boolean(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('section')
@@ -127,6 +144,8 @@ class TaskResource extends Resource
                     ->label('Completed Tasks'),
                 Tables\Filters\TernaryFilter::make('is_daily')
                     ->label('Daily Task'),
+                Tables\Filters\TernaryFilter::make('is_sensitive')
+                    ->label('Sensitive Task'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -134,8 +153,8 @@ class TaskResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
-            ])
-            ->defaultGroup('section');
+            ]);
+//            ->defaultGroup('section');
     }
 
     public static function getRelations(): array

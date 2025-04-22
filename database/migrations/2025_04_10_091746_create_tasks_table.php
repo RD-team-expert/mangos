@@ -21,6 +21,7 @@ return new class extends Migration
             $table->boolean('is_completed')->default(false);
             $table->timestamp('completed_at')->nullable();
             $table->boolean('is_daily')->default(false);
+            $table->boolean('is_sensitive')->default(false);
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
