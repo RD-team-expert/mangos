@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Storage;
 
 class TaskResource extends Resource
 {
@@ -85,8 +86,15 @@ class TaskResource extends Resource
                     ->visible(fn ($record) => $record && $record->is_completed && in_array($record->section, ['open', 'close']))
                     ->afterStateUpdated(function ($state, $record) {
                         if ($state && $record) {
-                            $record->images()->create(['image_path' => $state]);
-                            session()->flash('success', 'Image uploaded successfully! Please move to the next task.');
+                            if ($state instanceof \Illuminate\Http\UploadedFile) {
+                                // Generate a unique filename to avoid overwriting
+                                $fileName = time() . '_' . $state->getClientOriginalName();
+                                // Move the file to the public disk's task_images directory
+                                $path = $state->storeAs('task_images', $fileName, 'public');
+                                // Save the relative path to the database
+                                $record->images()->create(['image_path' => $path]);
+                                session()->flash('success', 'Image uploaded successfully! Please move to the next task.');
+                            }
                         }
                     }),
 
@@ -118,7 +126,18 @@ class TaskResource extends Resource
                     ->label('Completed Image')
                     ->stacked()
                     ->limit(3)
-                    ->limitedRemainingText(),
+                    ->limitedRemainingText()
+                    ->action(
+                        Tables\Actions\Action::make('viewImage')
+                            ->label('')
+                            ->modalContent(function ($record) {
+                                $images = $record->images->pluck('image_path')->toArray();
+                                return view('filament.modals.view-image', ['images' => $images]);
+                            })
+                            ->modalHeading('View Task Images')
+                            ->modalSubmitAction(false)
+                            ->modalCancelActionLabel('Close')
+                    ),
                 Tables\Columns\TextColumn::make('completed_at')
                     ->label('Completed At')
                     ->dateTime()
