@@ -2,28 +2,7 @@
 
 @section('title', 'Task Sections')
 
-<header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        <img src="{{ asset('storage/logo/WhatsApp Image 2025-03-13 at 17.34.05_18177d51.jpg') }}" alt="Logo" style="width: 100px; height: auto;">
-        <!-- User Info -->
-        @auth
-            <div class="text-sm text-gray-700">
-                Welcome, {{ Auth::user()->name }}
-                <a href="{{ route('logout') }}" class="ml-4 text-blue-600 hover:text-blue-800"
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    Logout
-                </a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-            </div>
-        @else
-            <div>
-                <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-800 mr-4">Login</a>
-            </div>
-        @endauth
-    </div>
-</header>
+
 
 @section('content')
     <div class="container mx-auto px-4">

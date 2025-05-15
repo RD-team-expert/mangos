@@ -1,5 +1,22 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', sidebarCollapsed: false, notificationsOpen: false }" x-init="darkMode ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark'); $watch('darkMode', value => { localStorage.setItem('darkMode', value); document.documentElement.classList.toggle('dark', value); })">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" 
+    x-data="{ 
+        darkMode: localStorage.getItem('darkMode') === 'true', 
+        sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+        isMobile: window.innerWidth <= 768,
+        notificationsOpen: false 
+    }" 
+    x-init="
+        darkMode ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark'); 
+        $watch('darkMode', value => { 
+            localStorage.setItem('darkMode', value); 
+            document.documentElement.classList.toggle('dark', value); 
+        }); 
+        $watch('sidebarCollapsed', value => { 
+            localStorage.setItem('sidebarCollapsed', value); 
+        });
+        window.addEventListener('resize', () => { isMobile = window.innerWidth <= 768; });
+    ">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,6 +68,7 @@
             background: var(--bg-body);
             color: var(--text-primary);
             transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
 
         @keyframes slideInLeft {
@@ -86,12 +104,14 @@
             position: fixed;
             top: 0;
             left: 0;
-            transition: width 0.3s ease, transform 0.3s ease;
+            transition: all 0.3s ease;
             animation: slideInLeft 0.5s ease-out;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
-            z-index: 1000; /* Ensure sidebar is above content on mobile */
+            z-index: 1000;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .sidebar.collapsed {
@@ -99,12 +119,31 @@
         }
 
         .sidebar-header {
-            padding: 1rem; /* Reduced padding for mobile */
+            padding: 1.25rem 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            width: 100%;
         }
 
         .toggle-sidebar, .dark-mode-toggle {
@@ -112,22 +151,34 @@
             border: none;
             color: var(--text-sidebar);
             cursor: pointer;
-            transition: transform 0.3s ease, color 0.3s ease;
-            padding: 0.5rem; /* Larger touch target */
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
         }
 
-        .toggle-sidebar.active {
-            animation: rotate 0.3s ease forwards;
+        .toggle-sidebar:hover, .dark-mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .toggle-sidebar.active i {
+            transform: rotate(180deg);
         }
 
         .sidebar-nav {
-            padding: 1rem; /* Reduced padding for mobile */
+            padding: 1rem;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.75rem;
             flex-grow: 1;
             overflow-y: auto;
             scroll-behavior: smooth;
+            align-items: center;
         }
 
         .sidebar-nav::-webkit-scrollbar {
@@ -165,44 +216,93 @@
             color: var(--text-sidebar);
             text-decoration: none;
             border-radius: 8px;
-            transition: background 0.2s ease, transform 0.2s ease;
+            transition: all 0.2s ease;
             font-size: 0.95rem;
+            white-space: nowrap;
+            width: 100%;
+            justify-content: flex-start;
+        }
 
+        .sidebar.collapsed .sidebar-nav a, 
+        .sidebar.collapsed .sidebar-nav button {
+            justify-content: center;
+            padding: 0.75rem;
         }
 
         .sidebar-nav a:hover, .sidebar-nav button:hover {
             background: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
-            animation: bounce 0.4s ease;
         }
 
         .sidebar-nav a.active {
             background: var(--bg-sidebar-active);
             color: var(--text-sidebar);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            font-weight: 500;
         }
 
         .sidebar-nav i {
             margin-right: 0.75rem;
             font-size: 1.2rem;
+            min-width: 1.5rem;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .sidebar-nav i {
+            margin-right: 0;
         }
 
         .sidebar-nav span {
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, width 0.3s ease;
         }
 
         .sidebar.collapsed .sidebar-nav span {
             opacity: 0;
             width: 0;
             overflow: hidden;
+            display: none;
+        }
+
+        .user-info-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 0.75rem;
+        }
+
+        .user-info {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .logout-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: auto;
         }
 
         .logout-btn {
-            margin-top: auto;
             background: var(--bg-logout);
             color: var(--text-sidebar);
             flex-shrink: 0;
-            padding: 0.75rem 1rem; /* Larger touch target */
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+            width: 90%;
+        }
+
+        .sidebar.collapsed .logout-btn {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            border-radius: 50%;
         }
 
         .logout-btn:hover {
@@ -211,7 +311,7 @@
 
         .content {
             margin-left: 260px;
-            padding: 1rem; /* Reduced padding for mobile */
+            padding: 1rem;
             width: calc(100% - 260px);
             transition: margin-left 0.3s ease, width 0.3s ease;
             animation: fadeInUp 0.5s ease-out;
@@ -220,7 +320,7 @@
             min-height: 100vh;
         }
 
-        .sidebar.collapsed~.content {
+        .sidebar.collapsed ~ .content {
             margin-left: 80px;
             width: calc(100% - 80px);
         }
@@ -239,63 +339,76 @@
 
         @media (max-width: 768px) {
             .sidebar {
-                width: 0; /* Hidden by default on mobile */
                 transform: translateX(-100%);
-
+                width: 260px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1050;
             }
 
             .sidebar.active {
-                width: 260px;
                 transform: translateX(0);
+                width: 260px;
+            }
 
+            .sidebar.collapsed:not(.active) {
+                transform: translateX(-100%);
+                width: 80px;
             }
 
             .content {
-                margin-left: 0;
-                width: 100%;
+                margin-left: 0 !important;
+                width: 100% !important;
                 padding: 1rem;
+                transition: all 0.3s ease;
             }
 
-            .sidebar-header {
-                padding: 1rem;
-            }
-
-            .sidebar-nav {
-                padding: 1rem;
-            }
-
-            .sidebar-nav span {
-                opacity: 0;
-                width: 0;
+            body.sidebar-open {
                 overflow: hidden;
             }
 
-            .sidebar-nav a, .sidebar-nav button {
-                padding: 1rem; /* Larger touch target on mobile */
+            .sidebar-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1040;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
             }
 
-            .logout-btn {
-                padding: 1rem; /* Larger touch target on mobile */
+            .sidebar-backdrop.active {
+                opacity: 1;
+                visibility: visible;
             }
 
-            footer {
-                text-align: center;
-                padding: 0.75rem;
-            }
-
-            /* Toggle button for mobile */
             .mobile-toggle {
                 display: block;
                 position: fixed;
                 top: 1rem;
                 left: 1rem;
-                background: var(--bg-sidebar);
+                background: var(--bg-sidebar-mobile-collapsed);
                 border: none;
                 color: var(--text-sidebar);
                 padding: 0.75rem;
                 border-radius: 8px;
-                z-index: 1001;
+                z-index: 1051;
                 cursor: pointer;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+                transition: all 0.3s ease;
+            }
+
+            .mobile-toggle:hover {
+                background: var(--bg-sidebar-active);
+            }
+
+            .mobile-toggle.active {
+                left: 280px;
             }
 
             .mobile-toggle.hidden {
@@ -310,52 +423,75 @@
         }
     </style>
 </head>
-<body class="flex min-h-screen">
-<button class="mobile-toggle" @click="sidebarCollapsed = !sidebarCollapsed" x-show="window.innerWidth <= 768">
-    <i class="fas fa-bars text-white"></i>
+<body class="flex min-h-screen" :class="{'sidebar-open': !sidebarCollapsed && isMobile}">
+<!-- Backdrop for mobile -->
+<div class="sidebar-backdrop" 
+     :class="{'active': !sidebarCollapsed && isMobile}" 
+     @click="sidebarCollapsed = true">
+</div>
+
+<button class="mobile-toggle" 
+        :class="{'active': !sidebarCollapsed && isMobile}"
+        @click="sidebarCollapsed = !sidebarCollapsed" 
+        x-show="isMobile">
+    <i class="fas" :class="sidebarCollapsed ? 'fa-bars' : 'fa-times'" class="text-white"></i>
 </button>
-<div class="sidebar" :class="{ collapsed: sidebarCollapsed, active: sidebarCollapsed && window.innerWidth <= 768 }">
+
+<div class="sidebar" 
+     :class="{ 
+        'collapsed': sidebarCollapsed && !isMobile, 
+        'active': !sidebarCollapsed && isMobile 
+     }">
     <div class="sidebar-header">
-        <div class="flex flex-col items-center justify-between">
-            <img src="{{ asset('storage/logo/mangos-logo--.png') }}" alt="Mangos Inventory Logo" class="h-24 w-auto md:h-40">
-            <div class="flex items-center space-x-2 mt-2">
-                <button class="dark-mode-toggle" @click="darkMode = !darkMode">
-                    <i :class="darkMode ? 'fas fa-sun' : 'fas fa-moon'" class="text-lg"></i>
-                </button>
-                <button class="toggle-sidebar" @click="sidebarCollapsed = !sidebarCollapsed" :class="{ 'active': sidebarCollapsed }">
-                    <i class="fas fa-bars text-white"></i>
-                </button>
-            </div>
+        <div class="sidebar-logo">
+            <img src="{{ asset('storage/logo/mangos-logo--.png') }}" alt="Mangos Inventory Logo" 
+                 class="h-20 w-auto md:h-24 transition-all duration-300"
+                 :class="{'h-16': sidebarCollapsed && !isMobile}">
+        </div>
+        <div class="sidebar-controls">
+            <button class="dark-mode-toggle" @click="darkMode = !darkMode" title="Toggle Dark Mode">
+                <i :class="darkMode ? 'fas fa-sun' : 'fas fa-moon'" class="text-lg"></i>
+            </button>
+            <button class="toggle-sidebar" 
+                    @click="sidebarCollapsed = !sidebarCollapsed" 
+                    :class="{ 'active': sidebarCollapsed }" 
+                    title="Toggle Sidebar"
+                    x-show="!isMobile">
+                <i class="fas fa-chevron-left text-white transition-transform duration-300"></i>
+            </button>
         </div>
         @auth
-            <div class="flex flex-col space-y-3 mt-4 text-center">
-                <span class="text-sm user-info" x-show="!sidebarCollapsed">{{ auth()->user()->username }}</span>
+            <div class="user-info-container" x-show="!sidebarCollapsed || isMobile">
+                <span class="text-sm font-medium user-info">{{ auth()->user()->username }}</span>
             </div>
         @endauth
     </div>
     <div class="sidebar-nav">
         @auth
-                <!-- User-specific routes -->
-                <a href="{{ route('inventory.index') }}" class="{{ request()->routeIs('inventory.index') ? 'active' : '' }}">
-                    <i class="fas fa-warehouse"></i>
-                    <span x-show="!sidebarCollapsed">Inventory</span>
-                </a>
-{{--                <a href="{{ route('tasks.sections') }}" class="{{ request()->routeIs('tasks.*') ? 'active' : '' }}">--}}
-{{--                    <i class="fas fa-tasks"></i>--}}
-{{--                    <span x-show="!sidebarCollapsed">My Sections</span>--}}
-{{--                </a>--}}
+            <!-- User-specific routes -->
+            <a href="{{ route('inventory.index') }}" class="{{ request()->routeIs('inventory.index') ? 'active' : '' }}">
+                <i class="fas fa-warehouse"></i>
+                <span x-show="!sidebarCollapsed || isMobile">Inventory</span>
+            </a>
+            {{-- <a href="{{ route('tasks.sections') }}" class="{{ request()->routeIs('tasks.*') ? 'active' : '' }}">
+                <i class="fas fa-tasks"></i>
+                <span x-show="!sidebarCollapsed || isMobile">My Sections</span>
+            </a> --}}
 
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="logout-btn">
-                    <i class="fas fa-sign-out-alt mr-2"></i>
-                    <span x-show="!sidebarCollapsed">Logout</span>
-                </button>
-            </form>
+            <div class="logout-container">
+                <form method="POST" action="{{ route('logout') }}" class="w-full flex justify-center">
+                    @csrf
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt" :class="{'mr-2': !sidebarCollapsed || isMobile}"></i>
+                        <span x-show="!sidebarCollapsed || isMobile">Logout</span>
+                    </button>
+                </form>
+            </div>
         @endauth
     </div>
 </div>
-<div class="content">
+
+<div class="content" :class="{'pl-0': isMobile}">
     <main class="container mx-auto px-4 py-6">
         @yield('content')
     </main>
@@ -366,5 +502,32 @@
         <span class="text-gray-500 dark:text-gray-400 text-sm">Made by R&D with ❤️</span>
     </footer>
 </div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('sidebar', {
+            init() {
+                // Check if we're on mobile on page load
+                this.checkMobile();
+                
+                // Add resize listener
+                window.addEventListener('resize', this.checkMobile.bind(this));
+            },
+            
+            checkMobile() {
+                const isMobile = window.innerWidth <= 768;
+                
+                // If on mobile, ensure sidebar is collapsed by default
+                if (isMobile && !Alpine.$data(document.body).sidebarInitialized) {
+                    Alpine.$data(document.body).sidebarCollapsed = true;
+                    Alpine.$data(document.body).sidebarInitialized = true;
+                }
+            }
+        });
+        
+        // Initialize the store
+        Alpine.store('sidebar').init();
+    });
+</script>
 </body>
 </html>

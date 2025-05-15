@@ -5,6 +5,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TestController;
+use App\Http\Controllers\TimeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
@@ -56,3 +58,9 @@ Route::post('/tasks/{task}/upload', [TaskController::class, 'uploadImage'])->nam
 Route::get('/tasks/{section}', [TaskController::class, 'tasks'])->name('tasks');
 Route::post('/tasks/{task}', [TaskController::class, 'updateTask'])->name('tasks.update');
 Route::post('/tasks/{task}/upload', [TaskController::class, 'uploadImage'])->name('tasks.upload');
+
+Route::get('/time', [TimeController::class, 'showTime'])->name('time.show');
+
+Route::get('/time', [TimeController::class, 'showTime'])->name('time.show');
+Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+Route::get('/test-cron', [TestController::class, 'testCron'])->name('test.cron');
