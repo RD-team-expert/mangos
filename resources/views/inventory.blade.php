@@ -2,25 +2,7 @@
 
 @section('title', 'Inventory Barcoding')
 <header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        <img src="{{ asset('storage/logo/WhatsApp Image 2025-03-13 at 17.34.05_18177d51.jpg') }}" alt="Logo" style="width: 100px; height: auto;">        <!-- User Info -->
-        @auth
-            <div class="text-sm text-gray-700">
-                Welcome, {{ Auth::user()->name }}
-                <a href="{{ route('logout') }}" class="ml-4 text-blue-600 hover:text-blue-800"
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    Logout
-                </a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-            </div>
-        @else
-            <div>
-                <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-800 mr-4">Login</a>
-            </div>
-        @endauth
-    </div>
+
 </header>
 @section('content')
     <div class="container mx-auto px-4">
@@ -45,10 +27,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     @forelse($items as $index => $item)
                         <div class="border rounded-lg shadow-md p-4 bg-white">
-                            <img src="{{ $item['image_url'] }}" alt="Item Image" class="w-full h-40 object-cover rounded-md">
+                            <img src="{{ $item['image_url'] }}" alt="Item Image" class="w-full h-40 object-center rounded-md">
                             <h2 class="text-lg font-bold mt-2">{{ $item['name'] }}</h2>
                             <label class="block text-sm font-medium text-gray-700 mt-2">We have</label>
-                            <input type="number" name="items[{{ $index }}][quantity]" value="{{ $item['quantity'] }}" min="0" step="1" required
+                            <input type="number" name="items[{{ $index }}][quantity]" value="0" min="0" step="1" required
                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3">
                             <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item['id'] }}">
                             <input type="hidden" name="category" value="{{ $selectedCategoryId }}">

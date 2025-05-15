@@ -34,7 +34,7 @@ Route::get('/items/{categoryId}', [InventoryController::class, 'getItemsByCatego
 //});
 
 Route::get('/', function () {
-    return redirect()->route('tasks.sections');
+    return redirect()->route('login');
 });
 
 Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
