@@ -12,7 +12,7 @@ Artisan::command('inspire', function () {
 
 Artisan::command('tasks:generate-daily', function () {
     Artisan::call('app:generate-daily-tasks');
-})->dailyAt('14:58');
+})->dailyAt('15:08');
 
 
 
