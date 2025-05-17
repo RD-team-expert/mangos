@@ -26,12 +26,12 @@ class AssignTasksOnLogin
     {
 
         $user = $event->user;
-        $now = Carbon::now();
+        // Set the timezone to America/New_York (Columbus, Ohio)
+        $now = Carbon::now('America/New_York');
 
-        // Define the time window (11:00 AM to 11:15 AM)
-        $startTime = Carbon::today()->setTime(12, 57);
-        $endTime = Carbon::today()->setTime(18, 18);
-//dd($now->between($startTime, $endTime));
+        // Define the time window (5:00 AM to 5:15 AM in Columbus timezone)
+        $startTime = Carbon::today('America/New_York')->setTime(5, 0);
+        $endTime = Carbon::today('America/New_York')->setTime(5, 15);
         if ($now->between($startTime, $endTime)) {
             // Get all users who logged in between 11:00 AM and 11:15 AM today
             $recentUsers = User::whereNotNull('last_login_at')

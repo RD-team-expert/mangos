@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" 
-    x-data="{ 
-        darkMode: localStorage.getItem('darkMode') === 'true', 
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+    x-data="{
+        darkMode: localStorage.getItem('darkMode') === 'true',
         sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
         isMobile: window.innerWidth <= 768,
-        notificationsOpen: false 
-    }" 
+        notificationsOpen: false
+    }"
     x-init="
-        darkMode ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark'); 
-        $watch('darkMode', value => { 
-            localStorage.setItem('darkMode', value); 
-            document.documentElement.classList.toggle('dark', value); 
-        }); 
-        $watch('sidebarCollapsed', value => { 
-            localStorage.setItem('sidebarCollapsed', value); 
+        darkMode ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark');
+        $watch('darkMode', value => {
+            localStorage.setItem('darkMode', value);
+            document.documentElement.classList.toggle('dark', value);
+        });
+        $watch('sidebarCollapsed', value => {
+            localStorage.setItem('sidebarCollapsed', value);
         });
         window.addEventListener('resize', () => { isMobile = window.innerWidth <= 768; });
     ">
@@ -223,7 +223,7 @@
             justify-content: flex-start;
         }
 
-        .sidebar.collapsed .sidebar-nav a, 
+        .sidebar.collapsed .sidebar-nav a,
         .sidebar.collapsed .sidebar-nav button {
             justify-content: center;
             padding: 0.75rem;
@@ -425,26 +425,26 @@
 </head>
 <body class="flex min-h-screen" :class="{'sidebar-open': !sidebarCollapsed && isMobile}">
 <!-- Backdrop for mobile -->
-<div class="sidebar-backdrop" 
-     :class="{'active': !sidebarCollapsed && isMobile}" 
+<div class="sidebar-backdrop"
+     :class="{'active': !sidebarCollapsed && isMobile}"
      @click="sidebarCollapsed = true">
 </div>
 
-<button class="mobile-toggle" 
+<button class="mobile-toggle"
         :class="{'active': !sidebarCollapsed && isMobile}"
-        @click="sidebarCollapsed = !sidebarCollapsed" 
+        @click="sidebarCollapsed = !sidebarCollapsed"
         x-show="isMobile">
     <i class="fas" :class="sidebarCollapsed ? 'fa-bars' : 'fa-times'" class="text-white"></i>
 </button>
 
-<div class="sidebar" 
-     :class="{ 
-        'collapsed': sidebarCollapsed && !isMobile, 
-        'active': !sidebarCollapsed && isMobile 
+<div class="sidebar"
+     :class="{
+        'collapsed': sidebarCollapsed && !isMobile,
+        'active': !sidebarCollapsed && isMobile
      }">
     <div class="sidebar-header">
         <div class="sidebar-logo">
-            <img src="{{ asset('storage/logo/mangos-logo--.png') }}" alt="Mangos Inventory Logo" 
+            <img src="{{ asset('storage/logo/mangos-logo--.png') }}" alt="Mangos Inventory Logo"
                  class="h-20 w-auto md:h-24 transition-all duration-300"
                  :class="{'h-16': sidebarCollapsed && !isMobile}">
         </div>
@@ -452,9 +452,9 @@
             <button class="dark-mode-toggle" @click="darkMode = !darkMode" title="Toggle Dark Mode">
                 <i :class="darkMode ? 'fas fa-sun' : 'fas fa-moon'" class="text-lg"></i>
             </button>
-            <button class="toggle-sidebar" 
-                    @click="sidebarCollapsed = !sidebarCollapsed" 
-                    :class="{ 'active': sidebarCollapsed }" 
+            <button class="toggle-sidebar"
+                    @click="sidebarCollapsed = !sidebarCollapsed"
+                    :class="{ 'active': sidebarCollapsed }"
                     title="Toggle Sidebar"
                     x-show="!isMobile">
                 <i class="fas fa-chevron-left text-white transition-transform duration-300"></i>
@@ -473,10 +473,10 @@
                 <i class="fas fa-warehouse"></i>
                 <span x-show="!sidebarCollapsed || isMobile">Inventory</span>
             </a>
-            {{-- <a href="{{ route('tasks.sections') }}" class="{{ request()->routeIs('tasks.*') ? 'active' : '' }}">
+             <a href="{{ route('tasks.sections') }}" class="{{ request()->routeIs('tasks.*') ? 'active' : '' }}">
                 <i class="fas fa-tasks"></i>
                 <span x-show="!sidebarCollapsed || isMobile">My Sections</span>
-            </a> --}}
+            </a>
 
             <div class="logout-container">
                 <form method="POST" action="{{ route('logout') }}" class="w-full flex justify-center">
@@ -509,14 +509,14 @@
             init() {
                 // Check if we're on mobile on page load
                 this.checkMobile();
-                
+
                 // Add resize listener
                 window.addEventListener('resize', this.checkMobile.bind(this));
             },
-            
+
             checkMobile() {
                 const isMobile = window.innerWidth <= 768;
-                
+
                 // If on mobile, ensure sidebar is collapsed by default
                 if (isMobile && !Alpine.$data(document.body).sidebarInitialized) {
                     Alpine.$data(document.body).sidebarCollapsed = true;
@@ -524,7 +524,7 @@
                 }
             }
         });
-        
+
         // Initialize the store
         Alpine.store('sidebar').init();
     });
