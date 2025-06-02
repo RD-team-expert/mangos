@@ -46,8 +46,8 @@ class Item extends Model
      * Custom method to calculate something related to counting.
      * Renamed to avoid conflict with Eloquent's built-in count() method.
      */
-    public function customCountLogic()
+    public function inventoryHistories()
     {
-        // Add your custom logic here if needed.
+        return $this->hasMany(InventoryHistory::class);
     }
 }
