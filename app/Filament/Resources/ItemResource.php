@@ -15,6 +15,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Toggle;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ItemResource extends Resource
@@ -70,7 +71,26 @@ class ItemResource extends Resource
                 TextColumn::make('last_count_date')->date()->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('category')
+                    ->relationship('category', 'category_name')
+                    ->label('Filter by Category')
+                    ->placeholder('All Categories'),
+                Tables\Filters\SelectFilter::make('supplier')
+                    ->relationship('supplier', 'name')
+                    ->label('Filter by Supplier')
+                    ->placeholder('All Suppliers'),
+                Tables\Filters\SelectFilter::make('must_have')
+                    ->label('Filter by Must Have')
+                    ->options([
+                        '1' => 'Yes',
+                        '0' => 'No',
+                    ])
+                    ->query(function ($query, $data) {
+                        if ($data['value'] !== null) {
+                            $query->where('must_have', $data['value']);
+                        }
+                    })
+                    ->placeholder('All'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
